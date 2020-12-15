@@ -5,7 +5,7 @@ async function removeFolder(dest) {
   await fs.rmdir(dest, { recursive: true })
 }
 
-async function recursiveFolderLookup(lastPath) {
+async function recursiveFolderLookup(lastPath, dirName) {
   const listDir = await fs.readdir(lastPath)
 
   for (let i = 0; i < listDir.length; ++i) {
@@ -13,7 +13,7 @@ async function recursiveFolderLookup(lastPath) {
     const lstat = await fs.lstat(newPath)
 
     if (lstat.isDirectory()) {
-      if (listDir[i] === 'node_modules') {
+      if (listDir[i] === dirName) {
         await removeFolder(newPath)
         console.log(`Directory: ${listDir[i]} removed from: ${newPath}`)
       } else {
@@ -30,7 +30,7 @@ async function main() {
   if (indexOfP !== -1 && args[indexOfP + 1]) {
     const initialPath = path.resolve(args[indexOfP + 1])
     console.log(`The initial path is: ${initialPath}`)
-    await recursiveFolderLookup(initialPath)
+    await recursiveFolderLookup(initialPath, 'node_modules')
   } else {
     console.log('Argument -p is necessary to indicate the path')
     return
